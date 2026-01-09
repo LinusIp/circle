@@ -1,0 +1,22 @@
+[
+  {
+    "id": "lsd4g6kei",
+    "name": "test",
+    "role": "test",
+    "category": "Science",
+    "bio": "test",
+    "website": "",
+    "linkedin": "",
+    "timestamp": 1767982792835
+  },
+  {
+    "id": "fmckul4tu",
+    "name": "Abdulloh Shavkatjonov",
+    "role": "Junior Full Stack AI engineer",
+    "category": "Technology",
+    "bio": "I'm a first year student at New Uzbekistan University, majoring in AI & Robotics.\nI'm interested in Tech, Space, Software technologies and more.\nI'm always open to collaborate and work together!)",
+    "website": "https://linusip.github.io/abdulloh_shavkatjonov/",
+    "linkedin": "https://www.linkedin.com/in/abdulloh-shavkatjonov-418439271/",
+    "timestamp": 1767981359860
+  }
+]

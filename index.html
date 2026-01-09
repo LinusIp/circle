@@ -309,6 +309,16 @@
             };
             leaders.unshift(data);
             localStorage.setItem('circle_app_leaders', JSON.stringify(leaders));
+
+            // Create download link for all users data
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(leaders, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "circle_users.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+
             e.target.reset();
             toggleModal(false);
             renderFeed();

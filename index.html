@@ -16,6 +16,9 @@
             }
         }
     </script>
+    <script id="user-data" type="application/json">
+    []
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -193,6 +196,9 @@
         </div>
     </footer>
 
+    <script id="user-data" type="application/json">
+    []
+    </script>
     <script>
         const CATEGORIES = [
             { id: 'Science', label: 'Science', icon: 'beaker', color: 'bg-emerald-500', text: 'text-emerald-500', desc: 'Empirical research and discovery.' },
@@ -202,7 +208,8 @@
             { id: 'Math', label: 'Math', icon: 'calculator', color: 'bg-blue-500', text: 'text-blue-500', desc: 'Logic, patterns, and analytics.' }
         ];
 
-        let leaders = JSON.parse(localStorage.getItem('circle_app_leaders')) || [];
+        const initialLeaders = JSON.parse(document.getElementById('user-data').textContent || '[]');
+        let leaders = JSON.parse(localStorage.getItem('circle_app_leaders')) || initialLeaders;
         let activeFilter = 'All';
 
         function init() {
@@ -310,14 +317,16 @@
             leaders.unshift(data);
             localStorage.setItem('circle_app_leaders', JSON.stringify(leaders));
 
-            // Create download link for all users data
+            // Create download link for updated user data file
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(leaders, null, 2));
             const downloadAnchorNode = document.createElement('a');
             downloadAnchorNode.setAttribute("href", dataStr);
-            downloadAnchorNode.setAttribute("download", "circle_users.json");
+            downloadAnchorNode.setAttribute("download", "index.html_updated.json");
             document.body.appendChild(downloadAnchorNode);
             downloadAnchorNode.click();
             downloadAnchorNode.remove();
+
+            alert("New profile added locally! To save it permanently to GitHub, please copy the contents of the downloaded 'index.html_updated.json' into the <script id=\"user-data\"> section of your index.html file in your repository.");
 
             e.target.reset();
             toggleModal(false);

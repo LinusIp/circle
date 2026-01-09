@@ -196,9 +196,6 @@
         </div>
     </footer>
 
-    <script id="user-data" type="application/json">
-    []
-    </script>
     <script>
         const CATEGORIES = [
             { id: 'Science', label: 'Science', icon: 'beaker', color: 'bg-emerald-500', text: 'text-emerald-500', desc: 'Empirical research and discovery.' },
@@ -208,11 +205,28 @@
             { id: 'Math', label: 'Math', icon: 'calculator', color: 'bg-blue-500', text: 'text-blue-500', desc: 'Logic, patterns, and analytics.' }
         ];
 
-        const initialLeaders = JSON.parse(document.getElementById('user-data').textContent || '[]');
-        let leaders = JSON.parse(localStorage.getItem('circle_app_leaders')) || initialLeaders;
+        let leaders = [];
         let activeFilter = 'All';
 
-        function init() {
+        async function init() {
+            try {
+                const response = await fetch('circle_users.json');
+                const githubData = await response.json();
+                const localData = JSON.parse(localStorage.getItem('circle_app_leaders')) || [];
+                
+                // Merge data, prioritizing local storage for the current session
+                const merged = [...localData];
+                githubData.forEach(gitUser => {
+                    if (!merged.find(u => u.id === gitUser.id)) {
+                        merged.push(gitUser);
+                    }
+                });
+                leaders = merged;
+            } catch (e) {
+                console.log('Using local data fallback');
+                leaders = JSON.parse(localStorage.getItem('circle_app_leaders')) || [];
+            }
+            
             renderCategories();
             renderFeed();
             lucide.createIcons();
@@ -302,7 +316,52 @@
             });
         }
 
-        document.getElementById('leader-form').onsubmit = (e) => {
+        async function saveToGitHub(newLeaders) {
+            const GITHUB_TOKEN = "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"; // Placeholder for secret - will be handled via proxy or user instruction
+            const OWNER = "LinusIp";
+            const REPO = "circle";
+            const FILE_PATH = "circle_users.json";
+            
+            if (!GITHUB_TOKEN) {
+                console.error("GITHUB_TOKEN not configured");
+                return false;
+            }
+
+            try {
+                // Get current file to get the SHA
+                const getUrl = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`;
+                const getRes = await fetch(getUrl, {
+                    headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+                });
+                const fileData = await getRes.json();
+                const sha = fileData.sha;
+
+                // Update file
+                const content = btoa(JSON.stringify(newLeaders, null, 2));
+                const putRes = await fetch(getUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: "Update circle_users.json via website",
+                        content: content,
+                        sha: sha
+                    })
+                });
+
+                if (putRes.ok) {
+                    console.log("Successfully updated GitHub");
+                    return true;
+                }
+            } catch (error) {
+                console.error("Error updating GitHub:", error);
+            }
+            return false;
+        }
+
+        document.getElementById('leader-form').onsubmit = async (e) => {
             e.preventDefault();
             const data = {
                 id: Math.random().toString(36).substr(2, 9),
@@ -314,23 +373,21 @@
                 linkedin: document.getElementById('linkedin').value,
                 timestamp: Date.now()
             };
-            leaders.unshift(data);
+            
+            const updatedLeaders = [data, ...leaders];
+            leaders = updatedLeaders;
             localStorage.setItem('circle_app_leaders', JSON.stringify(leaders));
-
-            // Create download link for updated user data file
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(leaders, null, 2));
-            const downloadAnchorNode = document.createElement('a');
-            downloadAnchorNode.setAttribute("href", dataStr);
-            downloadAnchorNode.setAttribute("download", "index.html_updated.json");
-            document.body.appendChild(downloadAnchorNode);
-            downloadAnchorNode.click();
-            downloadAnchorNode.remove();
-
-            alert("New profile added locally! To save it permanently to GitHub, please copy the contents of the downloaded 'index.html_updated.json' into the <script id=\"user-data\"> section of your index.html file in your repository.");
-
-            e.target.reset();
-            toggleModal(false);
+            
             renderFeed();
+            toggleModal(false);
+            e.target.reset();
+
+            const success = await saveToGitHub(updatedLeaders);
+            if (success) {
+                alert("Profile joined and synced with GitHub successfully!");
+            } else {
+                alert("Profile added locally. Please ensure your GITHUB_TOKEN is set in the code to sync permanently.");
+            }
         };
 
         init();

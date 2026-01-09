@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Circle | Find Your Orbit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    padding: {
+                        '4.5': '1.125rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .steam-active {
+            background-color: #4f46e5 !important; /* indigo-600 */
+            color: white !important;
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(79, 70, 229, 0.3);
+        }
+        .steam-active .icon-bg { background-color: rgba(255,255,255,0.2) !important; color: white !important; }
+        .steam-active .desc-text { color: rgba(224, 231, 255, 1) !important; opacity: 1 !important; }
+        .steam-active .title-text { color: white !important; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+    <header class="fixed top-0 left-0 right-0 z-50 glass">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center">
+                        <div class="w-3 h-3 rounded-full bg-white animate-pulse"></div>
+                    </div>
+                    <span class="text-xl font-bold tracking-tighter text-slate-900">CIRCLE</span>
+                </div>
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="#" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Home</a>
+                    <a href="#hub" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Categories</a>
+                    <a href="#" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Resources</a>
+                </nav>
+                <button onclick="toggleModal(true)" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-indigo-100">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Join the Circle
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section class="relative overflow-hidden bg-white pt-32 pb-32">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none opacity-20">
+            <div class="absolute top-[-10%] left-[10%] w-[40%] h-[60%] rounded-full bg-indigo-300 blur-[120px]"></div>
+            <div class="absolute bottom-[-10%] right-[10%] w-[40%] h-[60%] rounded-full bg-indigo-200 blur-[120px]"></div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative text-center animate-fade-in">
+            <span class="inline-block py-1 px-3 rounded-full bg-indigo-50 text-indigo-600 text-xs font-bold tracking-widest uppercase mb-4">Networking for Innovators</span>
+            <h1 class="text-5xl md:text-7xl font-extrabold text-slate-900 tracking-tight mb-6">Find your <span class="text-indigo-600">orbit.</span></h1>
+            <p class="max-w-2xl mx-auto text-lg md:text-xl text-slate-500 leading-relaxed mb-10">
+                A specialized network for young leaders redefining the world through Science, Technology, Engineering, Arts, and Math.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="#hub" class="px-8 py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all shadow-xl">Explore Leaders</a>
+                <div class="flex -space-x-3 overflow-hidden">
+                    <img class="inline-block h-10 w-10 rounded-full ring-2 ring-white" src="https://picsum.photos/seed/1/100/100">
+                    <img class="inline-block h-10 w-10 rounded-full ring-2 ring-white" src="https://picsum.photos/seed/2/100/100">
+                    <img class="inline-block h-10 w-10 rounded-full ring-2 ring-white" src="https://picsum.photos/seed/3/100/100">
+                    <div class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-xs font-bold ring-2 ring-white text-slate-400">+12k</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="hub" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-10">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4" id="category-grid"></div>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
+            <div>
+                <h2 class="text-3xl font-bold text-slate-900">The Live Feed</h2>
+                <p id="feed-subtitle" class="text-slate-500 mt-2">Connecting visionaries across the STEAM spectrum.</p>
+            </div>
+            <button id="reset-btn" onclick="updateFilter('All')" class="hidden text-indigo-600 font-medium hover:text-indigo-700 flex items-center gap-1 transition-all">
+                Reset Filter
+            </button>
+        </div>
+        <div id="feed-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+    </section>
+
+    <div id="modal-container" class="fixed inset-0 z-[100] flex items-center justify-center p-4 hidden">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]" onclick="toggleModal(false)"></div>
+        <div class="relative w-full max-w-2xl bg-white rounded-[2rem] shadow-2xl overflow-y-auto max-h-[95vh] animate-fade-in">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center p-8 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 flex items-center justify-center bg-indigo-50 text-indigo-600 rounded-xl">
+                        <i data-lucide="sparkles" class="w-6 h-6"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-900">Join the Circle</h2>
+                </div>
+                <button onclick="toggleModal(false)" class="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <form id="leader-form" class="p-8 pt-4 space-y-8">
+                <!-- Top Row: Full Name & Role/Title -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="block text-[13px] font-bold text-slate-900 uppercase tracking-tight">Full Name</label>
+                        <input type="text" id="name" placeholder="Dr. Elena Vance" required class="w-full px-4 py-3.5 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-300">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-[13px] font-bold text-slate-900 uppercase tracking-tight">Role / Title</label>
+                        <input type="text" id="role" placeholder="Lead AI Researcher" required class="w-full px-4 py-3.5 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-300">
+                    </div>
+                </div>
+
+                <!-- STEAM Category Selector -->
+                <div class="space-y-3">
+                    <label class="block text-[13px] font-bold text-slate-900 uppercase tracking-tight">STEAM Category</label>
+                    <div class="flex flex-wrap gap-2" id="modal-category-selector">
+                        <button type="button" onclick="setModalCategory('Science')" data-category="Science" class="modal-cat-btn px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-slate-50 text-slate-400 hover:bg-slate-100 transition-all">Science</button>
+                        <button type="button" onclick="setModalCategory('Technology')" data-category="Technology" class="modal-cat-btn px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-slate-50 text-slate-400 hover:bg-slate-100 transition-all">Technology</button>
+                        <button type="button" onclick="setModalCategory('Engineering')" data-category="Engineering" class="modal-cat-btn px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-slate-50 text-slate-400 hover:bg-slate-100 transition-all">Engineering</button>
+                        <button type="button" onclick="setModalCategory('Arts')" data-category="Arts" class="modal-cat-btn px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-slate-50 text-slate-400 hover:bg-slate-100 transition-all">Arts</button>
+                        <button type="button" onclick="setModalCategory('Math')" data-category="Math" class="modal-cat-btn px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-slate-50 text-slate-400 hover:bg-slate-100 transition-all">Math</button>
+                    </div>
+                    <input type="hidden" id="category" value="Science">
+                </div>
+
+                <!-- Bio / Pitch -->
+                <div class="space-y-2">
+                    <label class="block text-[13px] font-bold text-slate-900 uppercase tracking-tight">Your Bio / Pitch</label>
+                    <textarea id="bio" rows="4" placeholder="Tell the circle about your mission..." required class="w-full px-4 py-3.5 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-300 resize-none"></textarea>
+                </div>
+
+                <!-- Bottom Row: Website & LinkedIn -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="block text-[13px] font-bold text-slate-900 uppercase tracking-tight flex items-center gap-2">
+                            <i data-lucide="globe" class="w-4 h-4 text-slate-400"></i> Website / Portfolio
+                        </label>
+                        <input type="url" id="website" placeholder="https://yourportfolio.com" class="w-full px-4 py-3.5 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-300">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-[13px] font-bold text-slate-900 uppercase tracking-tight flex items-center gap-2">
+                            <i data-lucide="linkedin" class="w-4 h-4 text-slate-400"></i> LinkedIn Profile
+                        </label>
+                        <input type="url" id="linkedin" placeholder="https://linkedin.com/in/you" class="w-full px-4 py-3.5 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-300">
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="w-full py-4.5 bg-indigo-600 text-white font-bold text-sm rounded-2xl hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 active:scale-[0.98]">
+                    Enter Orbit
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="bg-white border-t border-slate-200 py-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <div class="flex items-center justify-center gap-2 mb-4">
+                <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center">
+                    <div class="w-3 h-3 rounded-full bg-white animate-pulse"></div>
+                </div>
+                <span class="text-xl font-bold text-slate-900">CIRCLE</span>
+            </div>
+            <p class="text-slate-400 text-sm">© 2024 Circle Networking. Empowering young leaders worldwide.</p>
+        </div>
+    </footer>
+
+    <script>
+        const CATEGORIES = [
+            { id: 'Science', label: 'Science', icon: 'beaker', color: 'bg-emerald-500', text: 'text-emerald-500', desc: 'Empirical research and discovery.' },
+            { id: 'Technology', label: 'Technology', icon: 'cpu', color: 'bg-indigo-500', text: 'text-indigo-500', desc: 'The future of software and systems.' },
+            { id: 'Engineering', label: 'Engineering', icon: 'settings', color: 'bg-orange-500', text: 'text-orange-500', desc: 'Building the infrastructure of tomorrow.' },
+            { id: 'Arts', label: 'Arts', icon: 'palette', color: 'bg-rose-500', text: 'text-rose-500', desc: 'Creativity, design, and expression.' },
+            { id: 'Math', label: 'Math', icon: 'calculator', color: 'bg-blue-500', text: 'text-blue-500', desc: 'Logic, patterns, and analytics.' }
+        ];
+
+        let leaders = JSON.parse(localStorage.getItem('circle_app_leaders')) || [];
+        let activeFilter = 'All';
+
+        function init() {
+            renderCategories();
+            renderFeed();
+            lucide.createIcons();
+        }
+
+        function renderCategories() {
+            const container = document.getElementById('category-grid');
+            container.innerHTML = CATEGORIES.map(cat => `
+                <button onclick="updateFilter('${cat.id}')" id="btn-${cat.id}" class="group relative p-6 rounded-3xl transition-all duration-300 text-left flex flex-col items-start gap-4 bg-white shadow-lg border border-slate-100 hover:bg-slate-50 overflow-hidden">
+                    <div class="icon-bg p-3 rounded-2xl ${cat.color} bg-opacity-10 ${cat.text} transition-colors">
+                        <i data-lucide="${cat.icon}" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="title-text font-bold text-lg text-slate-900 transition-colors">${cat.label}</h3>
+                        <p class="desc-text text-xs mt-1 leading-tight text-slate-400 opacity-0 group-hover:opacity-100 transition-all">${cat.desc}</p>
+                    </div>
+                </button>
+            `).join('');
+        }
+
+        function updateFilter(catId) {
+            activeFilter = (activeFilter === catId) ? 'All' : catId;
+            
+            document.querySelectorAll('[id^="btn-"]').forEach(el => el.classList.remove('steam-active'));
+            if (activeFilter !== 'All') {
+                document.getElementById(`btn-${activeFilter}`).classList.add('steam-active');
+            }
+
+            document.getElementById('reset-btn').classList.toggle('hidden', activeFilter === 'All');
+            document.getElementById('feed-subtitle').innerText = activeFilter === 'All' 
+                ? 'Connecting visionaries across the STEAM spectrum.' 
+                : `Leaders in the ${activeFilter} orbit.`;
+            
+            renderFeed();
+        }
+
+        function renderFeed() {
+            const container = document.getElementById('feed-container');
+            const filtered = activeFilter === 'All' ? leaders : leaders.filter(l => l.category === activeFilter);
+            
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full py-24 text-center bg-white rounded-[2rem] border-2 border-dashed border-slate-100">
+                        <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6"><i data-lucide="search" class="text-slate-300 w-8 h-8"></i></div>
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">Silence in the system</h3>
+                        <p class="text-slate-500">Be the first leader to join the ${activeFilter} circle!</p>
+                    </div>`;
+            } else {
+                container.innerHTML = filtered.map(l => {
+                    const meta = CATEGORIES.find(c => c.id === l.category);
+                    return `
+                    <div class="group bg-white rounded-[2rem] p-6 shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 animate-fade-in">
+                        <div class="flex justify-between items-start mb-6">
+                            <img src="https://picsum.photos/seed/${l.id}/100/100" class="w-14 h-14 rounded-2xl ring-4 ring-slate-50 object-cover">
+                            <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${meta.color} bg-opacity-10 ${meta.text}">${l.category}</span>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-900">${l.name}</h4>
+                        <p class="text-indigo-600 font-medium text-sm mb-4">${l.role}</p>
+                        <p class="text-slate-500 text-sm leading-relaxed line-clamp-3">${l.bio}</p>
+                        <div class="mt-8 flex gap-3 pt-6 border-t border-slate-50">
+                            <a href="${l.linkedin || '#'}" target="_blank" class="p-3 bg-slate-50 text-slate-400 rounded-2xl hover:bg-indigo-50 hover:text-indigo-600 transition-all"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+                            <a href="${l.website || '#'}" target="_blank" class="p-3 bg-slate-50 text-slate-400 rounded-2xl hover:bg-indigo-50 hover:text-indigo-600 transition-all"><i data-lucide="globe" class="w-5 h-5"></i></a>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+            lucide.createIcons();
+        }
+
+        function toggleModal(show) {
+            document.getElementById('modal-container').classList.toggle('hidden', !show);
+            if (show) {
+                setModalCategory('Science');
+            }
+        }
+
+        function setModalCategory(cat) {
+            document.getElementById('category').value = cat;
+            document.querySelectorAll('.modal-cat-btn').forEach(btn => {
+                if (btn.dataset.category === cat) {
+                    btn.classList.add('bg-indigo-600', 'text-white');
+                    btn.classList.remove('bg-slate-50', 'text-slate-400');
+                } else {
+                    btn.classList.remove('bg-indigo-600', 'text-white');
+                    btn.classList.add('bg-slate-50', 'text-slate-400');
+                }
+            });
+        }
+
+        document.getElementById('leader-form').onsubmit = (e) => {
+            e.preventDefault();
+            const data = {
+                id: Math.random().toString(36).substr(2, 9),
+                name: document.getElementById('name').value,
+                role: document.getElementById('role').value,
+                category: document.getElementById('category').value,
+                bio: document.getElementById('bio').value,
+                website: document.getElementById('website').value,
+                linkedin: document.getElementById('linkedin').value,
+                timestamp: Date.now()
+            };
+            leaders.unshift(data);
+            localStorage.setItem('circle_app_leaders', JSON.stringify(leaders));
+            e.target.reset();
+            toggleModal(false);
+            renderFeed();
+        };
+
+        init();
+    </script>
+</body>
+</html>

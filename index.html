@@ -1,28 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Circle | Find Your Orbit</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    padding: {
-                        '4.5': '1.125rem',
-                    }
-                }
-            }
-        }
-    </script>
-    <script id="user-data" type="application/json">
-    []
-    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
         .glass {
@@ -39,7 +25,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .steam-active {
-            background-color: #4f46e5 !important; /* indigo-600 */
+            background-color: #4f46e5 !important;
             color: white !important;
             transform: translateY(-8px);
             box-shadow: 0 25px 50px -12px rgba(79, 70, 229, 0.3);
@@ -47,10 +33,16 @@
         .steam-active .icon-bg { background-color: rgba(255,255,255,0.2) !important; color: white !important; }
         .steam-active .desc-text { color: rgba(224, 231, 255, 1) !important; opacity: 1 !important; }
         .steam-active .title-text { color: white !important; }
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
-
+    <!-- Header -->
     <header class="fixed top-0 left-0 right-0 z-50 glass">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
@@ -63,7 +55,7 @@
                 <nav class="hidden md:flex items-center space-x-8">
                     <a href="#" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Home</a>
                     <a href="#hub" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Categories</a>
-                    <a href="#" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Resources</a>
+                    <a href="#admin" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Admin</a>
                 </nav>
                 <button onclick="toggleModal(true)" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-indigo-100">
                     <i data-lucide="plus" class="w-4 h-4"></i> Join the Circle
@@ -72,6 +64,7 @@
         </div>
     </header>
 
+    <!-- Hero Section -->
     <section class="relative overflow-hidden bg-white pt-32 pb-32">
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none opacity-20">
             <div class="absolute top-[-10%] left-[10%] w-[40%] h-[60%] rounded-full bg-indigo-300 blur-[120px]"></div>
@@ -95,10 +88,12 @@
         </div>
     </section>
 
+    <!-- Categories Hub -->
     <section id="hub" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-10">
         <div class="grid grid-cols-2 md:grid-cols-5 gap-4" id="category-grid"></div>
     </section>
 
+    <!-- Live Feed -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
             <div>
@@ -112,10 +107,42 @@
         <div id="feed-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
     </section>
 
+    <!-- Admin Section for Data Management -->
+    <section id="admin" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-white rounded-2xl border border-slate-200 mb-12">
+        <h2 class="text-2xl font-bold text-slate-900 mb-6">Data Management</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-800">Export Data</h3>
+                <p class="text-sm text-slate-600">Download all leaders data as JSON file for sharing.</p>
+                <button onclick="exportData()" class="w-full px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl transition-all">
+                    <i data-lucide="download" class="w-4 h-4 inline mr-2"></i> Export JSON
+                </button>
+            </div>
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-800">Import Data</h3>
+                <p class="text-sm text-slate-600">Upload JSON file to load leaders data.</p>
+                <input type="file" id="json-upload" accept=".json" class="hidden">
+                <button onclick="document.getElementById('json-upload').click()" class="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-all">
+                    <i data-lucide="upload" class="w-4 h-4 inline mr-2"></i> Import JSON
+                </button>
+            </div>
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-800">Reset Data</h3>
+                <p class="text-sm text-slate-600">Clear all data and start fresh.</p>
+                <button onclick="resetData()" class="w-full px-4 py-3 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl transition-all">
+                    <i data-lucide="trash-2" class="w-4 h-4 inline mr-2"></i> Reset All Data
+                </button>
+            </div>
+        </div>
+        <div id="data-status" class="mt-6 p-4 bg-slate-50 rounded-xl">
+            <p class="text-sm text-slate-600"><span id="leader-count">0</span> leaders in database</p>
+        </div>
+    </section>
+
+    <!-- Join Modal -->
     <div id="modal-container" class="fixed inset-0 z-[100] flex items-center justify-center p-4 hidden">
         <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]" onclick="toggleModal(false)"></div>
         <div class="relative w-full max-w-2xl bg-white rounded-[2rem] shadow-2xl overflow-y-auto max-h-[95vh] animate-fade-in">
-            <!-- Modal Header -->
             <div class="flex justify-between items-center p-8 pb-4">
                 <div class="flex items-center gap-3">
                     <div class="w-12 h-12 flex items-center justify-center bg-indigo-50 text-indigo-600 rounded-xl">
@@ -129,7 +156,6 @@
             </div>
 
             <form id="leader-form" class="p-8 pt-4 space-y-8">
-                <!-- Top Row: Full Name & Role/Title -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-2">
                         <label class="block text-[13px] font-bold text-slate-900 uppercase tracking-tight">Full Name</label>
@@ -141,7 +167,6 @@
                     </div>
                 </div>
 
-                <!-- STEAM Category Selector -->
                 <div class="space-y-3">
                     <label class="block text-[13px] font-bold text-slate-900 uppercase tracking-tight">STEAM Category</label>
                     <div class="flex flex-wrap gap-2" id="modal-category-selector">
@@ -154,13 +179,11 @@
                     <input type="hidden" id="category" value="Science">
                 </div>
 
-                <!-- Bio / Pitch -->
                 <div class="space-y-2">
                     <label class="block text-[13px] font-bold text-slate-900 uppercase tracking-tight">Your Bio / Pitch</label>
                     <textarea id="bio" rows="4" placeholder="Tell the circle about your mission..." required class="w-full px-4 py-3.5 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-300 resize-none"></textarea>
                 </div>
 
-                <!-- Bottom Row: Website & LinkedIn -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-2">
                         <label class="block text-[13px] font-bold text-slate-900 uppercase tracking-tight flex items-center gap-2">
@@ -176,14 +199,14 @@
                     </div>
                 </div>
 
-                <!-- Submit Button -->
-                <button type="submit" class="w-full py-4.5 bg-indigo-600 text-white font-bold text-sm rounded-2xl hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 active:scale-[0.98]">
+                <button type="submit" class="w-full py-4 bg-indigo-600 text-white font-bold text-sm rounded-2xl hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 active:scale-[0.98]">
                     Enter Orbit
                 </button>
             </form>
         </div>
     </div>
 
+    <!-- Footer -->
     <footer class="bg-white border-t border-slate-200 py-12">
         <div class="max-w-7xl mx-auto px-4 text-center">
             <div class="flex items-center justify-center gap-2 mb-4">
@@ -197,6 +220,7 @@
     </footer>
 
     <script>
+        // Configuration
         const CATEGORIES = [
             { id: 'Science', label: 'Science', icon: 'beaker', color: 'bg-emerald-500', text: 'text-emerald-500', desc: 'Empirical research and discovery.' },
             { id: 'Technology', label: 'Technology', icon: 'cpu', color: 'bg-indigo-500', text: 'text-indigo-500', desc: 'The future of software and systems.' },
@@ -205,33 +229,51 @@
             { id: 'Math', label: 'Math', icon: 'calculator', color: 'bg-blue-500', text: 'text-blue-500', desc: 'Logic, patterns, and analytics.' }
         ];
 
+        const STORAGE_KEY = 'circle_leaders_data';
         let leaders = [];
         let activeFilter = 'All';
 
-        async function init() {
-            try {
-                const response = await fetch('circle_users.json');
-                const githubData = await response.json();
-                const localData = JSON.parse(localStorage.getItem('circle_app_leaders')) || [];
-                
-                // Merge data, prioritizing local storage for the current session
-                const merged = [...localData];
-                githubData.forEach(gitUser => {
-                    if (!merged.find(u => u.id === gitUser.id)) {
-                        merged.push(gitUser);
-                    }
-                });
-                leaders = merged;
-            } catch (e) {
-                console.log('Using local data fallback');
-                leaders = JSON.parse(localStorage.getItem('circle_app_leaders')) || [];
-            }
-            
+        // Initialize the application
+        function init() {
+            loadLeaders();
             renderCategories();
             renderFeed();
+            updateLeaderCount();
             lucide.createIcons();
+            
+            // Setup file upload listener
+            document.getElementById('json-upload').addEventListener('change', handleFileUpload);
         }
 
+        // Load leaders from localStorage
+        function loadLeaders() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    leaders = JSON.parse(saved);
+                }
+            } catch (e) {
+                console.error('Error loading leaders:', e);
+                leaders = [];
+            }
+        }
+
+        // Save leaders to localStorage
+        function saveLeaders() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(leaders));
+                updateLeaderCount();
+            } catch (e) {
+                console.error('Error saving leaders:', e);
+            }
+        }
+
+        // Update leader count display
+        function updateLeaderCount() {
+            document.getElementById('leader-count').textContent = leaders.length;
+        }
+
+        // Render category buttons
         function renderCategories() {
             const container = document.getElementById('category-grid');
             container.innerHTML = CATEGORIES.map(cat => `
@@ -245,17 +287,23 @@
                     </div>
                 </button>
             `).join('');
+            lucide.createIcons();
         }
 
+        // Update filter
         function updateFilter(catId) {
             activeFilter = (activeFilter === catId) ? 'All' : catId;
             
+            // Update UI
             document.querySelectorAll('[id^="btn-"]').forEach(el => el.classList.remove('steam-active'));
             if (activeFilter !== 'All') {
                 document.getElementById(`btn-${activeFilter}`).classList.add('steam-active');
             }
 
+            // Update reset button
             document.getElementById('reset-btn').classList.toggle('hidden', activeFilter === 'All');
+            
+            // Update subtitle
             document.getElementById('feed-subtitle').innerText = activeFilter === 'All' 
                 ? 'Connecting visionaries across the STEAM spectrum.' 
                 : `Leaders in the ${activeFilter} orbit.`;
@@ -263,6 +311,7 @@
             renderFeed();
         }
 
+        // Render feed
         function renderFeed() {
             const container = document.getElementById('feed-container');
             const filtered = activeFilter === 'All' ? leaders : leaders.filter(l => l.category === activeFilter);
@@ -272,11 +321,11 @@
                     <div class="col-span-full py-24 text-center bg-white rounded-[2rem] border-2 border-dashed border-slate-100">
                         <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6"><i data-lucide="search" class="text-slate-300 w-8 h-8"></i></div>
                         <h3 class="text-xl font-bold text-slate-900 mb-2">Silence in the system</h3>
-                        <p class="text-slate-500">Be the first leader to join the ${activeFilter} circle!</p>
+                        <p class="text-slate-500">${activeFilter === 'All' ? 'No leaders have joined yet. Be the first!' : `Be the first leader to join the ${activeFilter} circle!`}</p>
                     </div>`;
             } else {
                 container.innerHTML = filtered.map(l => {
-                    const meta = CATEGORIES.find(c => c.id === l.category);
+                    const meta = CATEGORIES.find(c => c.id === l.category) || CATEGORIES[0];
                     return `
                     <div class="group bg-white rounded-[2rem] p-6 shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 animate-fade-in">
                         <div class="flex justify-between items-start mb-6">
@@ -287,8 +336,8 @@
                         <p class="text-indigo-600 font-medium text-sm mb-4">${l.role}</p>
                         <p class="text-slate-500 text-sm leading-relaxed line-clamp-3">${l.bio}</p>
                         <div class="mt-8 flex gap-3 pt-6 border-t border-slate-50">
-                            <a href="${l.linkedin || '#'}" target="_blank" class="p-3 bg-slate-50 text-slate-400 rounded-2xl hover:bg-indigo-50 hover:text-indigo-600 transition-all"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
-                            <a href="${l.website || '#'}" target="_blank" class="p-3 bg-slate-50 text-slate-400 rounded-2xl hover:bg-indigo-50 hover:text-indigo-600 transition-all"><i data-lucide="globe" class="w-5 h-5"></i></a>
+                            ${l.linkedin ? `<a href="${l.linkedin}" target="_blank" class="p-3 bg-slate-50 text-slate-400 rounded-2xl hover:bg-indigo-50 hover:text-indigo-600 transition-all"><i data-lucide="linkedin" class="w-5 h-5"></i></a>` : ''}
+                            ${l.website ? `<a href="${l.website}" target="_blank" class="p-3 bg-slate-50 text-slate-400 rounded-2xl hover:bg-indigo-50 hover:text-indigo-600 transition-all"><i data-lucide="globe" class="w-5 h-5"></i></a>` : ''}
                         </div>
                     </div>`;
                 }).join('');
@@ -296,6 +345,7 @@
             lucide.createIcons();
         }
 
+        // Modal functions
         function toggleModal(show) {
             document.getElementById('modal-container').classList.toggle('hidden', !show);
             if (show) {
@@ -316,103 +366,119 @@
             });
         }
 
-        async function saveToGitHub(newLeaders) {
-            const GITHUB_TOKEN = "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"; // Placeholder for secret - will be handled via proxy or user instruction
-            const OWNER = "LinusIp";
-            const REPO = "circle";
-            const FILE_PATH = "circle_users.json";
-            
-            if (!GITHUB_TOKEN) {
-                console.error("GITHUB_TOKEN not configured");
-                return false;
-            }
-
-            try {
-                // Get current file to get the SHA
-                const getUrl = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`;
-                const getRes = await fetch(getUrl, {
-                    headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}` }
-                });
-                const fileData = await getRes.json();
-                
-                if (getRes.status === 404) {
-                    // Create file if it doesn't exist
-                    const content = btoa(JSON.stringify(newLeaders, null, 2));
-                    const putRes = await fetch(getUrl, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `Bearer ${GITHUB_TOKEN}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            message: "Create circle_users.json via website",
-                            content: content
-                        })
-                    });
-                    return putRes.ok;
-                }
-
-                const sha = fileData.sha;
-
-                // Update file
-                const content = btoa(JSON.stringify(newLeaders, null, 2));
-                const putRes = await fetch(getUrl, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${GITHUB_TOKEN}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: "Update circle_users.json via website",
-                        content: content,
-                        sha: sha
-                    })
-                });
-
-                if (putRes.ok) {
-                    console.log("Successfully updated GitHub");
-                    return true;
-                } else {
-                    const errorData = await putRes.json();
-                    console.error("GitHub API Error:", errorData);
-                    return false;
-                }
-            } catch (error) {
-                console.error("Error updating GitHub:", error);
-            }
-            return false;
-        }
-
-        document.getElementById('leader-form').onsubmit = async (e) => {
+        // Form submission
+        document.getElementById('leader-form').onsubmit = (e) => {
             e.preventDefault();
-            const data = {
-                id: Math.random().toString(36).substr(2, 9),
+            
+            const newLeader = {
+                id: Date.now().toString(36) + Math.random().toString(36).substr(2),
                 name: document.getElementById('name').value,
                 role: document.getElementById('role').value,
                 category: document.getElementById('category').value,
                 bio: document.getElementById('bio').value,
-                website: document.getElementById('website').value,
-                linkedin: document.getElementById('linkedin').value,
+                website: document.getElementById('website').value || '',
+                linkedin: document.getElementById('linkedin').value || '',
                 timestamp: Date.now()
             };
             
-            const updatedLeaders = [data, ...leaders];
-            leaders = updatedLeaders;
-            localStorage.setItem('circle_app_leaders', JSON.stringify(leaders));
+            leaders.unshift(newLeader);
+            saveLeaders();
             
-            renderFeed();
-            toggleModal(false);
+            // Reset form
             e.target.reset();
-
-            const success = await saveToGitHub(updatedLeaders);
-            if (success) {
-                alert("Profile joined and synced with GitHub successfully!");
-            } else {
-                alert("Profile added locally. Please ensure your GITHUB_TOKEN is set in the code to sync permanently.");
+            toggleModal(false);
+            
+            // Update UI
+            if (activeFilter === 'All' || activeFilter === newLeader.category) {
+                renderFeed();
             }
+            
+            alert('Profile added successfully!');
         };
 
-        init();
+        // Export data as JSON file
+        function exportData() {
+            const dataStr = JSON.stringify(leaders, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `circle_leaders_${new Date().toISOString().split('T')[0]}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            alert(`Exported ${leaders.length} leaders to JSON file`);
+        }
+
+        // Handle file upload
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (Array.isArray(importedData)) {
+                        leaders = importedData;
+                        saveLeaders();
+                        renderFeed();
+                        updateLeaderCount();
+                        alert(`Successfully imported ${importedData.length} leaders!`);
+                    } else {
+                        alert('Invalid JSON format. Expected an array of leaders.');
+                    }
+                } catch (error) {
+                    alert('Error parsing JSON file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            
+            // Reset file input
+            event.target.value = '';
+        }
+
+        // Reset all data
+        function resetData() {
+            if (confirm('Are you sure you want to reset all data? This cannot be undone.')) {
+                leaders = [];
+                saveLeaders();
+                renderFeed();
+                updateLeaderCount();
+                alert('All data has been reset.');
+            }
+        }
+
+        // Load initial JSON data if available (for GitHub Pages hosting)
+        async function loadInitialData() {
+            try {
+                const response = await fetch('circle_data.json');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (Array.isArray(data)) {
+                        const existingIds = new Set(leaders.map(l => l.id));
+                        const newLeaders = data.filter(l => !existingIds.has(l.id));
+                        if (newLeaders.length > 0) {
+                            leaders = [...newLeaders, ...leaders];
+                            saveLeaders();
+                            renderFeed();
+                            console.log(`Loaded ${newLeaders.length} leaders from circle_data.json`);
+                        }
+                    }
+                }
+            } catch (error) {
+                // File doesn't exist or can't be read - that's okay
+                console.log('No external data file found, using localStorage only');
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            init();
+            // Try to load external data after a short delay
+            setTimeout(loadInitialData, 500);
+        });
     </script>
 </body>
 </html>

@@ -39,6 +39,10 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
+        .data-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
@@ -55,7 +59,7 @@
                 <nav class="hidden md:flex items-center space-x-8">
                     <a href="#" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Home</a>
                     <a href="#hub" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Categories</a>
-                    <a href="#feed" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Leaders</a>
+                    <a href="#data-info" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Data</a>
                 </nav>
                 <button onclick="toggleModal(true)" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-indigo-100">
                     <i data-lucide="plus" class="w-4 h-4"></i> Join the Circle
@@ -94,7 +98,7 @@
     </section>
 
     <!-- Live Feed -->
-    <section id="feed" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
             <div>
                 <h2 class="text-3xl font-bold text-slate-900">The Live Feed</h2>
@@ -107,7 +111,56 @@
         <div id="feed-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             <div class="col-span-full py-12 text-center">
                 <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-                <p class="text-slate-500">Loading leaders from circle_users.json...</p>
+                <p class="text-slate-500">Loading leaders...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Data Information Section -->
+    <section id="data-info" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mb-12">
+        <div class="data-info rounded-2xl p-8 shadow-xl">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-white mb-2">Shared Community Data</h2>
+                    <p class="text-indigo-100">All profiles are stored in <code class="bg-white/20 px-2 py-1 rounded text-sm">circle_users.json</code> and shared across all users.</p>
+                </div>
+                <div class="flex gap-4">
+                    <button onclick="exportData()" class="px-6 py-3 bg-white text-indigo-600 font-bold rounded-xl hover:bg-indigo-50 transition-all flex items-center gap-2">
+                        <i data-lucide="download" class="w-5 h-5"></i> Export JSON
+                    </button>
+                    <button onclick="showUpdateInstructions()" class="px-6 py-3 bg-white/20 text-white font-bold rounded-xl hover:bg-white/30 transition-all border border-white/30 flex items-center gap-2">
+                        <i data-lucide="info" class="w-5 h-5"></i> Update Guide
+                    </button>
+                </div>
+            </div>
+            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white/10 p-4 rounded-xl">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="p-2 bg-white/20 rounded-lg">
+                            <i data-lucide="users" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <span class="text-white font-bold" id="total-leaders">0</span>
+                    </div>
+                    <p class="text-indigo-100 text-sm">Total Leaders</p>
+                </div>
+                <div class="bg-white/10 p-4 rounded-xl">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="p-2 bg-white/20 rounded-lg">
+                            <i data-lucide="refresh-cw" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <span class="text-white font-bold" id="last-update">Never</span>
+                    </div>
+                    <p class="text-indigo-100 text-sm">Last Update</p>
+                </div>
+                <div class="bg-white/10 p-4 rounded-xl">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="p-2 bg-white/20 rounded-lg">
+                            <i data-lucide="database" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <span class="text-white font-bold" id="storage-type">Loading...</span>
+                    </div>
+                    <p class="text-indigo-100 text-sm">Data Source</p>
+                </div>
             </div>
         </div>
     </section>
@@ -179,6 +232,78 @@
         </div>
     </div>
 
+    <!-- Update Instructions Modal -->
+    <div id="instructions-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 hidden">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]" onclick="toggleInstructionsModal(false)"></div>
+        <div class="relative w-full max-w-2xl bg-white rounded-[2rem] shadow-2xl overflow-y-auto max-h-[95vh] animate-fade-in">
+            <div class="flex justify-between items-center p-8 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 flex items-center justify-center bg-indigo-50 text-indigo-600 rounded-xl">
+                        <i data-lucide="upload" class="w-6 h-6"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-900">Update circle_users.json on GitHub</h2>
+                </div>
+                <button onclick="toggleInstructionsModal(false)" class="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <div class="p-8 pt-4 space-y-6">
+                <div class="space-y-4">
+                    <h3 class="text-lg font-bold text-slate-900">Step-by-Step Guide:</h3>
+                    
+                    <div class="bg-slate-50 p-4 rounded-xl space-y-3">
+                        <div class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 bg-indigo-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</span>
+                            <div>
+                                <p class="font-medium text-slate-900">Download the updated JSON</p>
+                                <p class="text-sm text-slate-600">Click "Export JSON" button to download the latest <code>circle_users.json</code> file.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 bg-indigo-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</span>
+                            <div>
+                                <p class="font-medium text-slate-900">Go to your GitHub repository</p>
+                                <p class="text-sm text-slate-600">Navigate to your GitHub repo where this app is hosted.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 bg-indigo-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</span>
+                            <div>
+                                <p class="font-medium text-slate-900">Upload the file</p>
+                                <p class="text-sm text-slate-600">Click "Add file" → "Upload files" → Select the downloaded <code>circle_users.json</code> → Commit changes.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 bg-indigo-600 text-white rounded-full flex items-center justify-center text-sm font-bold">4</span>
+                            <div>
+                                <p class="font-medium text-slate-900">Wait for deployment</p>
+                                <p class="text-sm text-slate-600">GitHub Pages will automatically deploy the update (takes 1-2 minutes).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                    <div class="flex items-start gap-3">
+                        <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5"></i>
+                        <div>
+                            <p class="font-medium text-amber-900">Important Note</p>
+                            <p class="text-sm text-amber-700">Until you upload the updated JSON to GitHub, new profiles are only visible to you (stored in your browser). To share them with all users worldwide, you must update the file on GitHub.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <button onclick="toggleInstructionsModal(false)" class="w-full py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all">
+                    Got it!
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="bg-white border-t border-slate-200 py-12">
         <div class="max-w-7xl mx-auto px-4 text-center">
@@ -203,56 +328,115 @@
         ];
 
         const JSON_FILE = 'circle_users.json';
+        const LOCAL_STORAGE_KEY = 'circle_local_leaders';
+        const LOCAL_STORAGE_PENDING = 'circle_pending_leaders';
         let leaders = [];
         let activeFilter = 'All';
 
         // Initialize the application
         async function init() {
-            await loadLeadersFromJSON();
+            await loadLeaders();
             renderCategories();
             renderFeed();
+            updateStats();
             lucide.createIcons();
+            
+            // Check if there are pending leaders to add
+            checkPendingLeaders();
         }
 
-        // Load leaders from circle_users.json
-        async function loadLeadersFromJSON() {
+        // Load leaders from JSON file first, then merge with localStorage
+        async function loadLeaders() {
             try {
+                // Try to load from JSON file (shared data)
                 const response = await fetch(JSON_FILE);
                 if (response.ok) {
-                    leaders = await response.json();
-                    console.log(`Loaded ${leaders.length} leaders from ${JSON_FILE}`);
+                    const jsonLeaders = await response.json();
+                    console.log(`Loaded ${jsonLeaders.length} leaders from ${JSON_FILE}`);
+                    
+                    // Load local leaders (user's own additions)
+                    const localLeaders = loadLocalLeaders();
+                    
+                    // Merge: JSON file + local leaders (avoiding duplicates by ID)
+                    const allLeadersMap = new Map();
+                    
+                    // First add JSON leaders
+                    jsonLeaders.forEach(leader => {
+                        allLeadersMap.set(leader.id, leader);
+                    });
+                    
+                    // Then add local leaders (these will override if same ID)
+                    localLeaders.forEach(leader => {
+                        allLeadersMap.set(leader.id, leader);
+                    });
+                    
+                    leaders = Array.from(allLeadersMap.values());
+                    leaders.sort((a, b) => b.timestamp - a.timestamp); // Newest first
+                    
+                    updateStatsDisplay('JSON + Local Storage');
                 } else {
-                    console.log(`${JSON_FILE} not found, starting with empty list`);
-                    leaders = [];
+                    // If no JSON file, use localStorage only
+                    leaders = loadLocalLeaders();
+                    updateStatsDisplay('Local Storage Only');
+                    console.log(`${JSON_FILE} not found, using local storage data`);
                 }
             } catch (error) {
-                console.error('Error loading leaders from JSON:', error);
-                leaders = [];
+                console.error('Error loading leaders:', error);
+                leaders = loadLocalLeaders();
+                updateStatsDisplay('Local Storage Only');
             }
         }
 
-        // Save leaders to circle_users.json (simulated for GitHub Pages)
-        async function saveLeadersToJSON(newLeader) {
+        // Load leaders from localStorage
+        function loadLocalLeaders() {
             try {
-                // For GitHub Pages, we can't write files directly
-                // So we create a download link for the updated JSON
-                const updatedLeaders = [newLeader, ...leaders];
-                const dataStr = JSON.stringify(updatedLeaders, null, 2);
-                const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+                const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+                return saved ? JSON.parse(saved) : [];
+            } catch (e) {
+                console.error('Error loading from localStorage:', e);
+                return [];
+            }
+        }
+
+        // Save leaders to localStorage
+        function saveToLocalStorage(newLeader) {
+            try {
+                // Add to local leaders
+                const localLeaders = loadLocalLeaders();
+                localLeaders.unshift(newLeader);
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(localLeaders));
                 
-                const linkElement = document.createElement('a');
-                linkElement.setAttribute('href', dataUri);
-                linkElement.setAttribute('download', JSON_FILE);
-                linkElement.style.display = 'none';
-                document.body.appendChild(linkElement);
-                linkElement.click();
-                document.body.removeChild(linkElement);
+                // Also add to pending uploads
+                const pending = JSON.parse(localStorage.getItem(LOCAL_STORAGE_PENDING) || '[]');
+                pending.push(newLeader);
+                localStorage.setItem(LOCAL_STORAGE_PENDING, JSON.stringify(pending));
                 
                 return true;
-            } catch (error) {
-                console.error('Error saving to JSON:', error);
+            } catch (e) {
+                console.error('Error saving to localStorage:', e);
                 return false;
             }
+        }
+
+        // Check for pending leaders and show reminder
+        function checkPendingLeaders() {
+            const pending = JSON.parse(localStorage.getItem(LOCAL_STORAGE_PENDING) || '[]');
+            if (pending.length > 0) {
+                setTimeout(() => {
+                    alert(`You have ${pending.length} new profile(s) waiting to be shared with the community! Please export and upload the JSON file to GitHub so others can see them.`);
+                }, 2000);
+            }
+        }
+
+        // Update statistics display
+        function updateStats() {
+            document.getElementById('total-leaders').textContent = leaders.length;
+            document.getElementById('last-update').textContent = new Date().toLocaleDateString();
+        }
+
+        function updateStatsDisplay(source) {
+            document.getElementById('storage-type').textContent = source;
+            updateStats();
         }
 
         // Render category buttons
@@ -308,11 +492,16 @@
             } else {
                 container.innerHTML = filtered.map(l => {
                     const meta = CATEGORIES.find(c => c.id === l.category) || CATEGORIES[0];
+                    const isLocalOnly = !l.source || l.source === 'local';
+                    
                     return `
                     <div class="group bg-white rounded-[2rem] p-6 shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 animate-fade-in">
                         <div class="flex justify-between items-start mb-6">
                             <img src="https://picsum.photos/seed/${l.id}/100/100" class="w-14 h-14 rounded-2xl ring-4 ring-slate-50 object-cover">
-                            <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${meta.color} bg-opacity-10 ${meta.text}">${l.category}</span>
+                            <div class="flex flex-col items-end gap-2">
+                                <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${meta.color} bg-opacity-10 ${meta.text}">${l.category}</span>
+                                ${isLocalOnly ? '<span class="px-2 py-1 rounded-full text-[8px] font-bold uppercase tracking-widest bg-amber-100 text-amber-700">Local</span>' : ''}
+                            </div>
                         </div>
                         <h4 class="text-xl font-bold text-slate-900">${l.name}</h4>
                         <p class="text-indigo-600 font-medium text-sm mb-4">${l.role}</p>
@@ -333,6 +522,10 @@
             if (show) {
                 setModalCategory('Science');
             }
+        }
+
+        function toggleInstructionsModal(show) {
+            document.getElementById('instructions-modal').classList.toggle('hidden', !show);
         }
 
         function setModalCategory(cat) {
@@ -360,11 +553,12 @@
                 bio: document.getElementById('bio').value,
                 website: document.getElementById('website').value || '',
                 linkedin: document.getElementById('linkedin').value || '',
-                timestamp: Date.now()
+                timestamp: Date.now(),
+                source: 'local'
             };
             
-            // Save to JSON file (download)
-            const saved = await saveLeadersToJSON(newLeader);
+            // Save to localStorage
+            const saved = saveToLocalStorage(newLeader);
             
             if (saved) {
                 // Update local array
@@ -375,15 +569,47 @@
                 toggleModal(false);
                 
                 // Update UI
+                updateStats();
                 if (activeFilter === 'All' || activeFilter === newLeader.category) {
                     renderFeed();
                 }
                 
-                alert('Profile added successfully! Please download the updated circle_users.json file and upload it to your GitHub repository to share with others.');
+                // Show success message with instructions
+                setTimeout(() => {
+                    alert('Profile added successfully!\n\n⚠️ IMPORTANT: This profile is only visible to you right now.\n\nTo share it with the entire community, please:\n1. Click "Export JSON" in the Data section\n2. Upload the file to your GitHub repository\n3. Wait for GitHub Pages to update');
+                }, 100);
             } else {
                 alert('Error saving profile. Please try again.');
             }
         };
+
+        // Export all data as JSON file
+        function exportData() {
+            const dataStr = JSON.stringify(leaders, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = 'circle_users.json';
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.style.display = 'none';
+            document.body.appendChild(linkElement);
+            linkElement.click();
+            document.body.removeChild(linkElement);
+            
+            // Clear pending leaders after export
+            localStorage.removeItem(LOCAL_STORAGE_PENDING);
+            
+            // Show instructions
+            setTimeout(() => {
+                showUpdateInstructions();
+            }, 500);
+        }
+
+        function showUpdateInstructions() {
+            toggleInstructionsModal(true);
+        }
 
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', init);

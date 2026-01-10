@@ -55,7 +55,7 @@
                 <nav class="hidden md:flex items-center space-x-8">
                     <a href="#" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Home</a>
                     <a href="#hub" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Categories</a>
-                    <a href="#admin" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Admin</a>
+                    <a href="#feed" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Leaders</a>
                 </nav>
                 <button onclick="toggleModal(true)" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-indigo-100">
                     <i data-lucide="plus" class="w-4 h-4"></i> Join the Circle
@@ -94,7 +94,7 @@
     </section>
 
     <!-- Live Feed -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+    <section id="feed" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
             <div>
                 <h2 class="text-3xl font-bold text-slate-900">The Live Feed</h2>
@@ -104,38 +104,11 @@
                 Reset Filter
             </button>
         </div>
-        <div id="feed-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-    </section>
-
-    <!-- Admin Section for Data Management -->
-    <section id="admin" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-white rounded-2xl border border-slate-200 mb-12">
-        <h2 class="text-2xl font-bold text-slate-900 mb-6">Data Management</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="space-y-4">
-                <h3 class="text-lg font-semibold text-slate-800">Export Data</h3>
-                <p class="text-sm text-slate-600">Download all leaders data as JSON file for sharing.</p>
-                <button onclick="exportData()" class="w-full px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl transition-all">
-                    <i data-lucide="download" class="w-4 h-4 inline mr-2"></i> Export JSON
-                </button>
+        <div id="feed-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="col-span-full py-12 text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+                <p class="text-slate-500">Loading leaders from circle_users.json...</p>
             </div>
-            <div class="space-y-4">
-                <h3 class="text-lg font-semibold text-slate-800">Import Data</h3>
-                <p class="text-sm text-slate-600">Upload JSON file to load leaders data.</p>
-                <input type="file" id="json-upload" accept=".json" class="hidden">
-                <button onclick="document.getElementById('json-upload').click()" class="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-all">
-                    <i data-lucide="upload" class="w-4 h-4 inline mr-2"></i> Import JSON
-                </button>
-            </div>
-            <div class="space-y-4">
-                <h3 class="text-lg font-semibold text-slate-800">Reset Data</h3>
-                <p class="text-sm text-slate-600">Clear all data and start fresh.</p>
-                <button onclick="resetData()" class="w-full px-4 py-3 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl transition-all">
-                    <i data-lucide="trash-2" class="w-4 h-4 inline mr-2"></i> Reset All Data
-                </button>
-            </div>
-        </div>
-        <div id="data-status" class="mt-6 p-4 bg-slate-50 rounded-xl">
-            <p class="text-sm text-slate-600"><span id="leader-count">0</span> leaders in database</p>
         </div>
     </section>
 
@@ -229,48 +202,57 @@
             { id: 'Math', label: 'Math', icon: 'calculator', color: 'bg-blue-500', text: 'text-blue-500', desc: 'Logic, patterns, and analytics.' }
         ];
 
-        const STORAGE_KEY = 'circle_leaders_data';
+        const JSON_FILE = 'circle_users.json';
         let leaders = [];
         let activeFilter = 'All';
 
         // Initialize the application
-        function init() {
-            loadLeaders();
+        async function init() {
+            await loadLeadersFromJSON();
             renderCategories();
             renderFeed();
-            updateLeaderCount();
             lucide.createIcons();
-            
-            // Setup file upload listener
-            document.getElementById('json-upload').addEventListener('change', handleFileUpload);
         }
 
-        // Load leaders from localStorage
-        function loadLeaders() {
+        // Load leaders from circle_users.json
+        async function loadLeadersFromJSON() {
             try {
-                const saved = localStorage.getItem(STORAGE_KEY);
-                if (saved) {
-                    leaders = JSON.parse(saved);
+                const response = await fetch(JSON_FILE);
+                if (response.ok) {
+                    leaders = await response.json();
+                    console.log(`Loaded ${leaders.length} leaders from ${JSON_FILE}`);
+                } else {
+                    console.log(`${JSON_FILE} not found, starting with empty list`);
+                    leaders = [];
                 }
-            } catch (e) {
-                console.error('Error loading leaders:', e);
+            } catch (error) {
+                console.error('Error loading leaders from JSON:', error);
                 leaders = [];
             }
         }
 
-        // Save leaders to localStorage
-        function saveLeaders() {
+        // Save leaders to circle_users.json (simulated for GitHub Pages)
+        async function saveLeadersToJSON(newLeader) {
             try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(leaders));
-                updateLeaderCount();
-            } catch (e) {
-                console.error('Error saving leaders:', e);
+                // For GitHub Pages, we can't write files directly
+                // So we create a download link for the updated JSON
+                const updatedLeaders = [newLeader, ...leaders];
+                const dataStr = JSON.stringify(updatedLeaders, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', JSON_FILE);
+                linkElement.style.display = 'none';
+                document.body.appendChild(linkElement);
+                linkElement.click();
+                document.body.removeChild(linkElement);
+                
+                return true;
+            } catch (error) {
+                console.error('Error saving to JSON:', error);
+                return false;
             }
-        }
-
-        // Update leader count display
-        function updateLeaderCount() {
-            document.getElementById('leader-count').textContent = leaders.length;
         }
 
         // Render category buttons
@@ -367,7 +349,7 @@
         }
 
         // Form submission
-        document.getElementById('leader-form').onsubmit = (e) => {
+        document.getElementById('leader-form').onsubmit = async (e) => {
             e.preventDefault();
             
             const newLeader = {
@@ -381,104 +363,30 @@
                 timestamp: Date.now()
             };
             
-            leaders.unshift(newLeader);
-            saveLeaders();
+            // Save to JSON file (download)
+            const saved = await saveLeadersToJSON(newLeader);
             
-            // Reset form
-            e.target.reset();
-            toggleModal(false);
-            
-            // Update UI
-            if (activeFilter === 'All' || activeFilter === newLeader.category) {
-                renderFeed();
+            if (saved) {
+                // Update local array
+                leaders.unshift(newLeader);
+                
+                // Reset form
+                e.target.reset();
+                toggleModal(false);
+                
+                // Update UI
+                if (activeFilter === 'All' || activeFilter === newLeader.category) {
+                    renderFeed();
+                }
+                
+                alert('Profile added successfully! Please download the updated circle_users.json file and upload it to your GitHub repository to share with others.');
+            } else {
+                alert('Error saving profile. Please try again.');
             }
-            
-            alert('Profile added successfully!');
         };
 
-        // Export data as JSON file
-        function exportData() {
-            const dataStr = JSON.stringify(leaders, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            
-            const exportFileDefaultName = `circle_leaders_${new Date().toISOString().split('T')[0]}.json`;
-            
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
-            
-            alert(`Exported ${leaders.length} leaders to JSON file`);
-        }
-
-        // Handle file upload
-        function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const importedData = JSON.parse(e.target.result);
-                    if (Array.isArray(importedData)) {
-                        leaders = importedData;
-                        saveLeaders();
-                        renderFeed();
-                        updateLeaderCount();
-                        alert(`Successfully imported ${importedData.length} leaders!`);
-                    } else {
-                        alert('Invalid JSON format. Expected an array of leaders.');
-                    }
-                } catch (error) {
-                    alert('Error parsing JSON file: ' + error.message);
-                }
-            };
-            reader.readAsText(file);
-            
-            // Reset file input
-            event.target.value = '';
-        }
-
-        // Reset all data
-        function resetData() {
-            if (confirm('Are you sure you want to reset all data? This cannot be undone.')) {
-                leaders = [];
-                saveLeaders();
-                renderFeed();
-                updateLeaderCount();
-                alert('All data has been reset.');
-            }
-        }
-
-        // Load initial JSON data if available (for GitHub Pages hosting)
-        async function loadInitialData() {
-            try {
-                const response = await fetch('circle_data.json');
-                if (response.ok) {
-                    const data = await response.json();
-                    if (Array.isArray(data)) {
-                        const existingIds = new Set(leaders.map(l => l.id));
-                        const newLeaders = data.filter(l => !existingIds.has(l.id));
-                        if (newLeaders.length > 0) {
-                            leaders = [...newLeaders, ...leaders];
-                            saveLeaders();
-                            renderFeed();
-                            console.log(`Loaded ${newLeaders.length} leaders from circle_data.json`);
-                        }
-                    }
-                }
-            } catch (error) {
-                // File doesn't exist or can't be read - that's okay
-                console.log('No external data file found, using localStorage only');
-            }
-        }
-
         // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            init();
-            // Try to load external data after a short delay
-            setTimeout(loadInitialData, 500);
-        });
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>

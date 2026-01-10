@@ -331,9 +331,27 @@
                 // Get current file to get the SHA
                 const getUrl = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`;
                 const getRes = await fetch(getUrl, {
-                    headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+                    headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}` }
                 });
                 const fileData = await getRes.json();
+                
+                if (getRes.status === 404) {
+                    // Create file if it doesn't exist
+                    const content = btoa(JSON.stringify(newLeaders, null, 2));
+                    const putRes = await fetch(getUrl, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: "Create circle_users.json via website",
+                            content: content
+                        })
+                    });
+                    return putRes.ok;
+                }
+
                 const sha = fileData.sha;
 
                 // Update file
@@ -341,7 +359,7 @@
                 const putRes = await fetch(getUrl, {
                     method: 'PUT',
                     headers: {
-                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Authorization': `Bearer ${GITHUB_TOKEN}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
@@ -354,6 +372,10 @@
                 if (putRes.ok) {
                     console.log("Successfully updated GitHub");
                     return true;
+                } else {
+                    const errorData = await putRes.json();
+                    console.error("GitHub API Error:", errorData);
+                    return false;
                 }
             } catch (error) {
                 console.error("Error updating GitHub:", error);
